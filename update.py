@@ -49,6 +49,8 @@ def fetch_rows():
             if field in ("start", "finish"):
                 val = normalize_date(val)
             node[field] = val
+        if not node.get("name") or not str(node["name"]).strip():
+            continue
         rows.append(node)
     return rows
 
@@ -135,14 +137,6 @@ html,body{{height:100%;background:var(--bg);color:var(--text);font-family:'JetBr
 #tooltip .tt-row{{display:flex;gap:6px;color:var(--text2);margin-top:2px}}
 #tooltip .tt-label{{color:var(--text3);min-width:55px}}
 
-/* ── Detail panel ── */
-#detail-panel{{position:fixed;right:0;top:0;bottom:0;width:360px;background:var(--panel-bg);border-left:1px solid var(--border);z-index:50;transform:translateX(100%);transition:transform .25s ease;overflow-y:auto;padding:16px}}
-#detail-panel.open{{transform:translateX(0)}}
-#detail-close{{float:right;background:none;border:none;color:var(--text2);cursor:pointer;font-size:16px;padding:0 4px}}
-#detail-panel h2{{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;color:var(--text);margin-bottom:12px;padding-right:24px;line-height:1.2}}
-.detail-field{{margin-bottom:8px}}
-.detail-label{{color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.5px;margin-bottom:2px}}
-.detail-value{{color:var(--text);font-size:12px;word-break:break-word}}
 
 /* ── Resize handle ── */
 #resize-handle{{width:4px;cursor:col-resize;background:transparent;flex-shrink:0;transition:background .15s}}
@@ -191,10 +185,6 @@ html,body{{height:100%;background:var(--bg);color:var(--text);font-family:'JetBr
   </div>
 </div>
 <div id="tooltip"></div>
-<div id="detail-panel">
-  <button id="detail-close" onclick="closeDetail()">✕</button>
-  <div id="detail-content"></div>
-</div>
 
 <script>
 const __DATA__ = {data_json};
@@ -202,17 +192,19 @@ const ROWS = __DATA__.rows;
 const ROW_H = 28;
 const AXIS_H = 36;
 const RYG_COLORS = {{Green:'#22c55e',Yellow:'#eab308',Red:'#ef4444',Gray:'#6b7280',null:'#3a3a4a'}};
+const EMOJI_COLORS = {{'🟢':'#22c55e','🟡':'#eab308','🔴':'#ef4444','⚪':'#6b7280','✅':'#5535f3'}};
 const RYG_DONE = '#5535f3';
 const ACCENT = 'rgb(85,53,243)';
 
 // ── State ──
 let collapsed = new Set();
 let visibleRYG = new Set(['Green','Yellow','Red','Gray','null']);
-let currentScale = 'W';
 let selectedId = null;
+let pxPerDay = 10;
+let prevPxPerDay = null;
 let rowMap = {{}};
 let visibleRows = [];
-let minDate, maxDate, totalDays, pxPerDay;
+let minDate, maxDate, totalDays;
 
 // ── Init ──
 function init() {{
@@ -233,6 +225,7 @@ function init() {{
   render();
   setupSync();
   setupResize();
+  setupZoom();
 }}
 
 function getDepth(row) {{
@@ -269,10 +262,6 @@ function computeDateRange() {{
   totalDays = Math.ceil((max - min) / 86400000);
 }}
 
-function scalePx() {{
-  return {{D:40, W:10, M:2.5, Q:1}}[currentScale] || 10;
-}}
-
 function dateToX(dateStr) {{
   if (!dateStr) return null;
   const ms = +new Date(dateStr) - +minDate;
@@ -281,7 +270,6 @@ function dateToX(dateStr) {{
 
 // ── Render ──
 function render() {{
-  pxPerDay = scalePx();
   const totalW = Math.ceil(totalDays * pxPerDay);
 
   // Compute visible rows
@@ -307,7 +295,7 @@ function render() {{
 }}
 
 function rygColor(row) {{
-  if (row.statusEmoji === '✅') return RYG_DONE;
+  if (row.statusEmoji && EMOJI_COLORS[row.statusEmoji]) return EMOJI_COLORS[row.statusEmoji];
   return RYG_COLORS[row.ryg] || RYG_COLORS['null'];
 }}
 
@@ -331,17 +319,11 @@ function renderLabels() {{
       chevron.onclick = e => {{ e.stopPropagation(); toggleCollapse(r.id); }};
     }}
 
-    const circle = document.createElement('span');
-    circle.className = 'ryg-circle';
-    circle.style.background = rygColor(r);
-    if (!r.ryg && !r.statusEmoji) circle.style.opacity = '0';
-
     const name = document.createElement('span');
     name.className = 'name';
     name.textContent = (r.statusEmoji ? r.statusEmoji + ' ' : '') + (r.name || '—');
 
     div.appendChild(chevron);
-    div.appendChild(circle);
     div.appendChild(name);
 
     div.addEventListener('click', () => selectRow(r));
@@ -353,6 +335,22 @@ function renderLabels() {{
   }});
 }}
 
+function svgLine(svg, x, y1, y2, stroke, sw) {{
+  const l = document.createElementNS('http://www.w3.org/2000/svg','line');
+  l.setAttribute('x1',x); l.setAttribute('x2',x);
+  l.setAttribute('y1',y1); l.setAttribute('y2',y2);
+  l.setAttribute('stroke',stroke); l.setAttribute('stroke-width',sw||1);
+  svg.appendChild(l);
+}}
+function svgText(svg, x, y, label, fill, size) {{
+  const t = document.createElementNS('http://www.w3.org/2000/svg','text');
+  t.setAttribute('x',x); t.setAttribute('y',y);
+  t.setAttribute('fill',fill); t.setAttribute('font-size',size||10);
+  t.setAttribute('font-family','JetBrains Mono,monospace');
+  t.textContent = label;
+  svg.appendChild(t);
+}}
+
 function renderAxis(totalW) {{
   const axis = document.getElementById('time-axis');
   axis.innerHTML = '';
@@ -360,60 +358,74 @@ function renderAxis(totalW) {{
   svg.setAttribute('width', totalW);
   svg.setAttribute('height', AXIS_H);
 
+  // Auto-pick tick granularity from zoom level
+  const grain = pxPerDay >= 20 ? 'D' : pxPerDay >= 3 ? 'W' : pxPerDay >= 0.6 ? 'M' : 'Q';
+
   const cur = new Date(minDate);
   const end = new Date(maxDate);
 
-  while (cur <= end) {{
-    const x = dateToX(cur.toISOString().split('T')[0]);
-    let label = '';
-    let major = false;
-
-    if (currentScale === 'D') {{
-      label = cur.getDate();
-      major = cur.getDate() === 1;
-    }} else if (currentScale === 'W') {{
-      const day = cur.getDay();
-      if (day === 1) {{
-        label = cur.toLocaleDateString('en-US',{{month:'short',day:'numeric'}});
-        major = cur.getDate() <= 7;
-      }}
-    }} else if (currentScale === 'M') {{
+  if (grain === 'D') {{
+    // Two-band: top = month name, bottom = day number
+    while (cur <= end) {{
+      const x = dateToX(cur.toISOString().split('T')[0]);
+      // Day tick + number (bottom band)
+      svgLine(svg, x, 18, AXIS_H, '#2a2a38');
+      svgText(svg, x+3, 30, cur.getDate(), '#6a6a82', 10);
+      // Month boundary (top band)
       if (cur.getDate() === 1) {{
-        label = cur.toLocaleDateString('en-US',{{month:'short',year:'2-digit'}});
-        major = cur.getMonth() === 0;
+        svgLine(svg, x, 0, AXIS_H, '#3a3a52');
+        svgText(svg, x+4, 13, cur.toLocaleDateString('en-US',{{month:'long',year:'numeric'}}), '#9090a8', 11);
       }}
-    }} else if (currentScale === 'Q') {{
-      if (cur.getDate() === 1 && cur.getMonth() % 3 === 0) {{
-        const q = Math.floor(cur.getMonth()/3)+1;
-        label = 'Q'+q+' '+cur.getFullYear();
-        major = true;
+      cur.setDate(cur.getDate()+1);
+    }}
+    // Pinned month label: if the 1st of the current visible month is off to the left,
+    // draw the month name at x=4 so the user always knows which month they're viewing.
+    // (rendered last so it paints over day numbers)
+    const bw = document.getElementById('bars-wrap');
+    const scrollLeft = bw ? bw.scrollLeft : 0;
+    const visibleDate = new Date(+minDate + scrollLeft / pxPerDay * 86400000);
+    const pinMonth = new Date(visibleDate.getFullYear(), visibleDate.getMonth(), 1);
+    const pinX = dateToX(pinMonth.toISOString().split('T')[0]);
+    if (pinX < scrollLeft + 4) {{
+      // Draw semi-transparent background rect then label
+      const bg = document.createElementNS('http://www.w3.org/2000/svg','rect');
+      bg.setAttribute('x', scrollLeft); bg.setAttribute('y', 0);
+      bg.setAttribute('width', 160); bg.setAttribute('height', 17);
+      bg.setAttribute('fill','var(--bg2)');
+      svg.appendChild(bg);
+      svgText(svg, scrollLeft+4, 13,
+        visibleDate.toLocaleDateString('en-US',{{month:'long',year:'numeric'}}),
+        '#9090a8', 11);
+    }}
+  }} else {{
+    while (cur <= end) {{
+      const x = dateToX(cur.toISOString().split('T')[0]);
+      let label = '';
+      let major = false;
+
+      if (grain === 'W') {{
+        if (cur.getDay() === 1) {{
+          label = cur.toLocaleDateString('en-US',{{month:'short',day:'numeric'}});
+          major = cur.getDate() <= 7;
+        }}
+      }} else if (grain === 'M') {{
+        if (cur.getDate() === 1) {{
+          label = cur.toLocaleDateString('en-US',{{month:'short',year:'2-digit'}});
+          major = cur.getMonth() === 0;
+        }}
+      }} else {{
+        if (cur.getDate() === 1 && cur.getMonth() % 3 === 0) {{
+          label = 'Q'+(Math.floor(cur.getMonth()/3)+1)+' '+cur.getFullYear();
+          major = true;
+        }}
       }}
+
+      if (label) {{
+        svgLine(svg, x, major ? 0 : 18, AXIS_H, major ? '#3a3a52' : '#2a2a38');
+        svgText(svg, x+3, 14, label, major ? '#9090a8' : '#5a5a72', major ? 11 : 10);
+      }}
+      cur.setDate(cur.getDate()+1);
     }}
-
-    if (label) {{
-      const line = document.createElementNS('http://www.w3.org/2000/svg','line');
-      line.setAttribute('x1',x); line.setAttribute('x2',x);
-      line.setAttribute('y1', major ? 0 : 18);
-      line.setAttribute('y2', AXIS_H);
-      line.setAttribute('stroke', major ? '#3a3a52' : '#2a2a38');
-      line.setAttribute('stroke-width','1');
-      svg.appendChild(line);
-
-      const text = document.createElementNS('http://www.w3.org/2000/svg','text');
-      text.setAttribute('x', x+3);
-      text.setAttribute('y', 14);
-      text.setAttribute('fill', major ? '#9090a8' : '#5a5a72');
-      text.setAttribute('font-size', major ? '11' : '10');
-      text.setAttribute('font-family','JetBrains Mono,monospace');
-      text.textContent = label;
-      svg.appendChild(text);
-    }}
-
-    // advance
-    if (currentScale === 'D') cur.setDate(cur.getDate()+1);
-    else if (currentScale === 'W') cur.setDate(cur.getDate()+1);
-    else if (currentScale === 'M') cur.setDate(cur.getDate()+1);
-    else cur.setDate(cur.getDate()+1);
   }}
 
   // Today line
@@ -422,8 +434,7 @@ function renderAxis(totalW) {{
     const line = document.createElementNS('http://www.w3.org/2000/svg','line');
     line.setAttribute('x1',todayX); line.setAttribute('x2',todayX);
     line.setAttribute('y1',0); line.setAttribute('y2',AXIS_H);
-    line.setAttribute('stroke','rgb(85,53,243)');
-    line.setAttribute('stroke-width','2');
+    line.setAttribute('stroke','rgb(85,53,243)'); line.setAttribute('stroke-width','2');
     svg.appendChild(line);
   }}
 
@@ -499,6 +510,18 @@ function renderBars(totalW) {{
       tl.setAttribute('stroke','rgba(85,53,243,0.4)'); tl.setAttribute('stroke-width','1');
       svg.appendChild(tl);
     }}
+
+    // Invisible hover overlay — same tooltip as label panel
+    const overlay = document.createElementNS('http://www.w3.org/2000/svg','rect');
+    overlay.setAttribute('x',0); overlay.setAttribute('y',y);
+    overlay.setAttribute('width',totalW); overlay.setAttribute('height',ROW_H);
+    overlay.setAttribute('fill','transparent');
+    overlay.style.cursor = 'pointer';
+    overlay.addEventListener('mouseenter', e => showTooltip(e, r));
+    overlay.addEventListener('mouseleave', hideTooltip);
+    overlay.addEventListener('mousemove', moveTooltip);
+    overlay.addEventListener('click', () => selectRow(r));
+    svg.appendChild(overlay);
   }});
 
   document.getElementById('bars-inner').style.width = totalW + 'px';
@@ -553,7 +576,8 @@ function applyFilters() {{ render(); syncScroll(); }}
 function setScale(btn) {{
   document.querySelectorAll('[data-scale]').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
-  currentScale = btn.dataset.scale;
+  pxPerDay = {{D:40, W:10, M:2.5, Q:0.8}}[btn.dataset.scale] || 10;
+  selectedId = null;
   render();
 }}
 
@@ -596,51 +620,27 @@ function hideTooltip() {{
   ttTarget = null;
 }}
 
-// ── Detail panel ──
+// ── Row selection ──
+const MIN_DAYS = 15;
 function selectRow(row) {{
   selectedId = row.id;
-  render();
-  const panel = document.getElementById('detail-panel');
-  const content = document.getElementById('detail-content');
-
-  const fields = [
-    ['Name', row.name],
-    ['Status', (row.statusEmoji||'') + ' ' + (row.ryg||'')],
-    ['Start', row.start],
-    ['Finish', row.finish],
-    ['Duration', row.duration],
-    ['Assignee', row.assignee],
-    ['% Complete', row.pctComplete ? row.pctComplete + '%' : null],
-    ['Predecessors', row.predecessors],
-    ['Comments', row.comments],
-    ['Master Schedule', row.masterScheduleItem ? 'Yes' : null],
-  ];
-
-  let html = `<h2>${{row.statusEmoji ? row.statusEmoji + ' ' : ''}}</h2>`;
-  html = `<h2>${{(row.statusEmoji ? row.statusEmoji + ' ' : '') + (row.name || '')}}</h2>`;
-
-  fields.forEach(([label, val]) => {{
-    if (!val || !String(val).trim()) return;
-    html += `<div class="detail-field">
-      <div class="detail-label">${{label}}</div>
-      <div class="detail-value">${{val}}</div>
-    </div>`;
-  }});
-
-  // Children count
-  const children = ROWS.filter(r => r.parentId === row.id);
-  if (children.length) {{
-    html += `<div class="detail-field"><div class="detail-label">Sub-tasks</div><div class="detail-value">${{children.length}}</div></div>`;
+  const bw = document.getElementById('bars-wrap');
+  if (row.start && row.finish) {{
+    const barDays = Math.max(0, (new Date(row.finish) - new Date(row.start)) / 86400000);
+    const displayDays = Math.max(barDays, MIN_DAYS);
+    pxPerDay = bw.clientWidth / displayDays;
+    document.querySelectorAll('[data-scale]').forEach(b => b.classList.remove('active'));
+    render();
+    const x1 = dateToX(row.start);
+    const x2 = dateToX(row.finish);
+    if (barDays >= MIN_DAYS) {{
+      bw.scrollLeft = Math.max(0, x1);
+    }} else {{
+      bw.scrollLeft = Math.max(0, (x1 + x2) / 2 - bw.clientWidth / 2);
+    }}
+  }} else {{
+    render();
   }}
-
-  content.innerHTML = html;
-  panel.classList.add('open');
-}}
-
-function closeDetail() {{
-  document.getElementById('detail-panel').classList.remove('open');
-  selectedId = null;
-  render();
 }}
 
 // ── Scroll sync ──
@@ -664,6 +664,25 @@ function syncScroll() {{
   const lp = document.getElementById('label-panel');
   const bw = document.getElementById('bars-wrap');
   bw.scrollTop = lp.scrollTop;
+}}
+
+// ── Zoom (Ctrl/Cmd + scroll) ──
+function setupZoom() {{
+  const bw = document.getElementById('bars-wrap');
+  bw.addEventListener('wheel', e => {{
+    if (!e.ctrlKey && !e.metaKey) return;
+    e.preventDefault();
+    const rect = bw.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left + bw.scrollLeft;
+    const factor = e.deltaY < 0 ? 1.18 : 1/1.18;
+    const newPx = Math.max(0.2, Math.min(80, pxPerDay * factor));
+    const ratio = newPx / pxPerDay;
+    pxPerDay = newPx;
+    // Clear active scale button since we're freeform
+    document.querySelectorAll('[data-scale]').forEach(b => b.classList.remove('active'));
+    render();
+    bw.scrollLeft = mouseX * ratio - (e.clientX - rect.left);
+  }}, {{passive: false}});
 }}
 
 // ── Resize handle ──

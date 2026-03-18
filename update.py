@@ -74,6 +74,7 @@ def build_html(rows, updated_at):
 <title>Mytra Timeline</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
 <style>
 *,*::before,*::after{{box-sizing:border-box;margin:0;padding:0}}
 
@@ -100,7 +101,7 @@ html,body{{height:100%;background:var(--bg);color:var(--text);font-family:'Robot
 
 /* ── Toolbar ── */
 #toolbar{{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}}
-#toolbar-logo{{height:28px;display:block;filter:invert(1);margin-right:8px}}
+#toolbar-logo{{height:28px;display:block;filter:invert(1);margin-right:8px;cursor:pointer}}
 :root[data-theme="light"] #toolbar-logo{{filter:invert(0)}}
 .tb-sep{{width:1px;height:20px;background:var(--border);margin:0 4px}}
 .btn{{background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:3px 8px;border-radius:4px;cursor:pointer;font-size:11px;font-family:'Roboto Mono',monospace;transition:all .15s}}
@@ -158,7 +159,7 @@ html,body{{height:100%;background:var(--bg);color:var(--text);font-family:'Robot
 <body>
 <div id="app">
   <div id="toolbar">
-    <img id="toolbar-logo" src="data:image/svg+xml;base64,{LOGO_B64}" alt="Mytra">
+    <img id="toolbar-logo" src="data:image/svg+xml;base64,{LOGO_B64}" alt="Mytra" onclick="launchConfetti()">
     <div class="tb-sep"></div>
     <button class="btn" onclick="collapseAll()">− all</button>
     <button class="btn" onclick="changeLevel(-1)">−</button>
@@ -716,6 +717,16 @@ function setupResize() {{
   document.addEventListener('mouseup', () => {{
     dragging = false; document.body.style.cursor = '';
   }});
+}}
+
+// ── Confetti ──
+function launchConfetti() {{
+  const colors = ['#5535f3','#7c3aed','#a78bfa','#c4b5fd','#e2e8f0','#cbd5e1','#ffffff','#f8fafc'];
+  const opts = {{ particleCount:300, spread:180, startVelocity:60, gravity:0.5, scalar:3, ticks:400, colors }};
+  confetti({{ ...opts, origin:{{x:0.5, y:0.3}} }});
+  setTimeout(() => confetti({{ ...opts, origin:{{x:0.2, y:0.5}}, angle:60 }}), 150);
+  setTimeout(() => confetti({{ ...opts, origin:{{x:0.8, y:0.5}}, angle:120 }}), 300);
+  setTimeout(() => confetti({{ ...opts, particleCount:200, origin:{{x:0.5, y:1}}, angle:90, startVelocity:80 }}), 500);
 }}
 
 // ── Theme restore ──

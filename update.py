@@ -1,4 +1,4 @@
-import os, json, requests, subprocess, tempfile
+import os, json, requests, subprocess, tempfile, argparse
 from datetime import datetime, timezone
 
 SHEET_ID = "3906472049069956"
@@ -723,12 +723,23 @@ init();
 </html>"""
 
 def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--skipcloudflare", action="store_true", help="Skip wrangler deployment; write index.html locally")
+    args = parser.parse_args()
+
     print("Fetching Smartsheet data...")
     rows = fetch_rows()
     print(f"  {len(rows)} rows fetched")
 
     updated_at = datetime.now(timezone.utc).isoformat()
     html = build_html(rows, updated_at)
+
+    if args.skipcloudflare:
+        html_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "index.html")
+        with open(html_path, "w", encoding="utf-8") as f:
+            f.write(html)
+        print(f"Wrote {html_path} (skipped Cloudflare deployment)")
+        return
 
     with tempfile.TemporaryDirectory() as tmpdir:
         html_path = os.path.join(tmpdir, "index.html")

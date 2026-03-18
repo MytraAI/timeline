@@ -1,5 +1,7 @@
 import os, json, requests, subprocess, tempfile, argparse
 from datetime import datetime, timezone
+from dotenv import load_dotenv
+load_dotenv()
 
 SHEET_ID = "3906472049069956"
 SS_TOKEN = os.environ["SMARTSHEET_API_TOKEN"]

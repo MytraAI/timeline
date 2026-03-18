@@ -21,6 +21,8 @@ COLUMN_MAP = {
     7348448918196100: "masterScheduleItem",
 }
 
+LOGO_B64 = "PHN2ZyB3aWR0aD0iMTA0OSIgaGVpZ2h0PSI0MjYiIHZpZXdCb3g9IjAgMCAxMDQ5IDQyNiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTkwNC4zOTggMjQ2Ljk0MUw5MDQuNzAzIDI0Ni4xOThMOTE5LjI3NCAyMTEuODg0TDkzNC4wNTUgMjQ2LjE5OEg5MzQuMjA3TDkzOC42NyAyNTYuNDE1SDk2Mi4wNzFMOTIwLjk5MSAxNzAuMjg5QzkyMC42MDkgMTY5LjQxMiA5MTkuODg0IDE2OS40MTIgOTE5LjQ4NCAxNzAuMjg5TDg3OC4zMjcgMjU2LjQ3M0g5MDAuMzc0TDkwNC4zOTggMjQ2Ljk0MVoiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik03NzcuNDk1IDI1Ni40NzNINzU0LjgzOFYxNzEuNzc2SDc4OS4wNzFDODEwLjU4NCAxNzEuNzc2IDgyMi41NDIgMTg0LjQ1MyA4MjIuNTQyIDIwMS43NjJDODIyLjU0MiAyMTIuOTUyIDgxNy4yMDIgMjIxLjc3OCA4MDcuMTEzIDIyNi4zNzJMODI0LjY1OSAyNTYuMzc3SDgwMC4xMzNMNzg1LjIgMjI5Ljg4SDc3Ny41NzFMNzc3LjQ5NSAyNTYuNDczWk03ODcuOTQ2IDIxMi42MjhDNzk1LjU3NSAyMTIuNjI4IDc5OS43NzEgMjA4LjgxNSA3OTkuNzcxIDIwMS44Qzc5OS43NzEgMTk0Ljc4NSA3OTUuNjUxIDE5MC45NzIgNzg3Ljk0NiAxOTAuOTcySDc3Ny40OTVWMjEyLjYyOEg3ODcuOTQ2WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTY0OS43NTMgMTkwLjgySDYyNy4zNjNWMTcxLjc3Nkg2OTQuODJWMTkwLjgySDY3Mi40M1YyNTYuMzc3SDY0OS43NTNWMTkwLjgyWiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTQ5Mi4xODMgMTcxLjc3Nkg1MTcuMDlMNTMzLjc1OSAyMDIuNzUzTDU1MC40NDYgMTcxLjc3Nkg1NzQuMjFMNTQ0LjcwNiAyMjMuMDM2VjI1Ni4zNzdINTIyLjA2OFYyMjMuNjY1TDQ5Mi4xODMgMTcxLjc3NloiIGZpbGw9ImJsYWNrIi8+CjxwYXRoIGQ9Ik0zNTMuMzk4IDE3MC44OTlDMzUzLjUxMiAxNzAuMDQxIDM1NC4wMDggMTcwLjE1NiAzNTQuNTA0IDE3MC43ODVMMzk1LjA3IDIxNi4zMDdMNDM1LjEyIDE3MC43ODVDNDM1LjYxNiAxNzAuMTU2IDQzNi4xMTIgMTcwLjA0MSA0MzYuMjQ1IDE3MC44OTlMNDQxLjE0NyAyNTYuNDczSDQxOC44NTJMNDE2Ljk0NSAyMjAuMzg2TDM5NS43OTQgMjQ0LjkwMUMzOTUuNzI2IDI0NC45ODUgMzk1LjY0MSAyNDUuMDUzIDM5NS41NDMgMjQ1LjA5OUMzOTUuNDQ2IDI0NS4xNDUgMzk1LjMzOSAyNDUuMTY5IDM5NS4yMzIgMjQ1LjE2OUMzOTUuMTI0IDI0NS4xNjkgMzk1LjAxNyAyNDUuMTQ1IDM5NC45MiAyNDUuMDk5QzM5NC44MjMgMjQ1LjA1MyAzOTQuNzM3IDI0NC45ODUgMzk0LjY2OSAyNDQuOTAxTDM3Mi41NjUgMjIwLjI1M0wzNzAuNjU4IDI1Ni40NzNIMzQ4LjQ3OEwzNTMuMzk4IDE3MC44OTlaIiBmaWxsPSJibGFjayIvPgo8cGF0aCBkPSJNOTc0LjYzMyAyNTdWMjY5SDk3Mi4zNTdWMjU3SDk3NC42MzNaTTk3OC4wNDQgMjU3VjI1OC45MzdIOTY5VjI1N0g5NzguMDQ0WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTk4MC4zODggMjU3SDk4Mi4zMjJMOTg1LjE2OSAyNjUuODFMOTg4LjAxNiAyNTdIOTg5Ljk0OUw5ODUuOTQ1IDI2OUg5ODQuMzkyTDk4MC4zODggMjU3Wk05NzkuMzQ1IDI1N0g5ODEuMjcxTDk4MS42MjEgMjY1LjU4OFYyNjlIOTc5LjM0NVYyNTdaTTk4OS4wNjYgMjU3SDk5MVYyNjlIOTg4LjcxNlYyNjUuNTg4TDk4OS4wNjYgMjU3WiIgZmlsbD0iYmxhY2siLz4KPHBhdGggZD0iTTg4LjAxNTYgMTQwLjYyN1YyODUuMzcyQzg4LjE0NjkgMjg4LjQzNiA4OS4yNzM0IDI5MS4zNzQgOTEuMjI0NyAyOTMuNzRDOTMuMTc1OSAyOTYuMTA3IDk1Ljg0NTYgMjk3Ljc3MyA5OC44Mjk0IDI5OC40ODdMMTE0LjA4NyAzMDIuODUzVjE1Ni42NEMxMTQuMDg3IDE1My4zMDQgMTE4LjY4MyAxNTEuNjQ2IDEyMS4zNTMgMTU0LjAwOUwxNDQuOTQ1IDE3NC45NzlDMTQ1LjMyNSAxNzUuMzAxIDE0NS42MzIgMTc1LjcgMTQ1Ljg0NiAxNzYuMTUxQzE0Ni4wNiAxNzYuNjAxIDE0Ni4xNzUgMTc3LjA5MiAxNDYuMTg0IDE3Ny41OVYzMTIuMDc5TDE3Ny43NDggMzIxLjE5MVYxNDQuMTkyQzE3Ny43NDggMTQxLjAyNyAxODEuOTYzIDEzOS4zMTIgMTg0LjcyOCAxNDEuMzMyTDIxNS4yNDMgMTYzLjY1NUMyMTUuNzA2IDE2My45NzYgMjE2LjA4NiAxNjQuNDAzIDIxNi4zNTIgMTY0LjlDMjE2LjYxNyAxNjUuMzk4IDIxNi43NiAxNjUuOTUxIDIxNi43NjkgMTY2LjUxNVYzMzIuNDU4TDIzNy40OCAzMzguNDI0QzI0Ny42NjUgMzQxLjM2IDI1OC4xMzUgMzM0LjYxMiAyNTguMTM1IDMyNS4zMDlWMTAwLjY5QzI1OC4xMzUgOTEuMjkyMiAyNDcuNjY1IDg0LjYzOTIgMjM3LjQ4IDg3LjU3NDlMOTguODg2NCAxMjcuNjA3Qzk1LjkwMjcgMTI4LjMyMSA5My4yMzMyIDEyOS45ODggOTEuMjgxOSAxMzIuMzU0Qzg5LjMzMDcgMTM0LjcyMSA4OC4yMDQxIDEzNy42NTkgODguMDcyOSAxNDAuNzIyIiBmaWxsPSJibGFjayIvPgo8L3N2Zz4K"
+
 def normalize_date(val):
     if not val:
         return None
@@ -64,7 +66,7 @@ def build_html(rows, updated_at):
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Mytra Timeline</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{{box-sizing:border-box;margin:0;padding:0}}
 
@@ -87,18 +89,21 @@ def build_html(rows, updated_at):
   --tooltip-bg:#ffffff;--panel-bg:#ffffff;
 }}
 
-html,body{{height:100%;background:var(--bg);color:var(--text);font-family:'JetBrains Mono',monospace;font-size:12px;overflow:hidden}}
+html,body{{height:100%;background:var(--bg);color:var(--text);font-family:'Roboto Mono',monospace;font-size:12px;overflow:hidden}}
 
 /* ── Toolbar ── */
 #toolbar{{display:flex;align-items:center;gap:8px;padding:6px 12px;background:var(--bg2);border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}}
-#toolbar h1{{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:700;letter-spacing:1px;color:var(--text);margin-right:8px}}
+#toolbar-logo{{height:28px;display:block;filter:invert(1);margin-right:8px}}
+:root[data-theme="light"] #toolbar-logo{{filter:invert(0)}}
 .tb-sep{{width:1px;height:20px;background:var(--border);margin:0 4px}}
-.btn{{background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:3px 8px;border-radius:4px;cursor:pointer;font-size:11px;font-family:'JetBrains Mono',monospace;transition:all .15s}}
+.btn{{background:var(--bg3);border:1px solid var(--border);color:var(--text2);padding:3px 8px;border-radius:4px;cursor:pointer;font-size:11px;font-family:'Roboto Mono',monospace;transition:all .15s}}
 .btn:hover{{border-color:var(--accent);color:var(--text)}}
 .btn.active{{background:var(--accent-light);border-color:var(--accent);color:var(--accent)}}
-.ryg-btn{{display:flex;align-items:center;gap:4px;padding:3px 7px}}
-.ryg-dot{{width:8px;height:8px;border-radius:50%;display:inline-block;flex-shrink:0}}
-#filter-include,#filter-exclude{{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:3px 7px;border-radius:4px;font-size:11px;font-family:'JetBrains Mono',monospace;width:120px}}
+.ryg-btn{{width:20px;height:20px;border-radius:50%;border:2px solid transparent;padding:0;flex-shrink:0;transition:transform .15s,border-color .15s,opacity .15s}}
+.ryg-btn:hover{{transform:scale(1.2);border-color:rgba(255,255,255,0.4) !important}}
+.ryg-btn:not(.active){{opacity:0.25}}
+.ryg-btn.active{{opacity:1;border-color:rgba(255,255,255,0.2)}}
+#filter-include,#filter-exclude{{background:var(--bg3);border:1px solid var(--border);color:var(--text);padding:3px 7px;border-radius:4px;font-size:11px;font-family:'Roboto Mono',monospace;width:120px}}
 #filter-include::placeholder,#filter-exclude::placeholder{{color:var(--text3)}}
 #updated{{margin-left:auto;color:var(--text3);font-size:10px;white-space:nowrap}}
 
@@ -108,7 +113,7 @@ html,body{{height:100%;background:var(--bg);color:var(--text);font-family:'JetBr
 
 /* ── Left label panel ── */
 #label-panel{{width:320px;min-width:200px;max-width:500px;flex-shrink:0;overflow-y:auto;overflow-x:hidden;border-right:1px solid var(--border);background:var(--bg2);position:relative}}
-#label-header{{height:36px;display:flex;align-items:center;padding:0 8px;border-bottom:1px solid var(--border);background:var(--bg2);position:sticky;top:0;z-index:2;font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;color:var(--text2);letter-spacing:.5px}}
+#label-header{{height:36px;display:flex;align-items:center;padding:0 8px;border-bottom:1px solid var(--border);background:var(--bg2);position:sticky;top:0;z-index:2;font-family:'Roboto',sans-serif;font-size:13px;font-weight:600;color:var(--text2);letter-spacing:.5px}}
 
 .row-label{{display:flex;align-items:center;height:28px;padding-right:8px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s;position:relative}}
 .row-label:hover{{background:var(--bg3)}}
@@ -117,7 +122,7 @@ html,body{{height:100%;background:var(--bg);color:var(--text);font-family:'JetBr
 .row-label .chevron{{width:16px;flex-shrink:0;color:var(--text3);font-size:10px;text-align:center;user-select:none}}
 .row-label .ryg-circle{{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-right:5px}}
 .row-label .name{{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);font-size:11px}}
-.row-label.group-row .name{{font-family:'Barlow Condensed',sans-serif;font-size:13px;font-weight:600;letter-spacing:.3px}}
+.row-label.group-row .name{{font-family:'Roboto',sans-serif;font-size:13px;font-weight:600;letter-spacing:.3px}}
 .row-label.hidden{{display:none}}
 
 /* ── Right bars panel ── */
@@ -133,7 +138,7 @@ html,body{{height:100%;background:var(--bg);color:var(--text);font-family:'JetBr
 
 /* ── Tooltip ── */
 #tooltip{{position:fixed;pointer-events:none;background:var(--tooltip-bg);border:1px solid var(--border);border-radius:6px;padding:8px 10px;font-size:11px;z-index:100;display:none;max-width:240px;box-shadow:0 4px 16px rgba(0,0,0,0.4)}}
-#tooltip .tt-name{{font-family:'Barlow Condensed',sans-serif;font-size:14px;font-weight:600;color:var(--text);margin-bottom:5px;line-height:1.2}}
+#tooltip .tt-name{{font-family:'Roboto',sans-serif;font-size:14px;font-weight:600;color:var(--text);margin-bottom:5px;line-height:1.2}}
 #tooltip .tt-row{{display:flex;gap:6px;color:var(--text2);margin-top:2px}}
 #tooltip .tt-label{{color:var(--text3);min-width:55px}}
 
@@ -146,18 +151,17 @@ html,body{{height:100%;background:var(--bg);color:var(--text);font-family:'JetBr
 <body>
 <div id="app">
   <div id="toolbar">
-    <h1>TIMELINE</h1>
+    <img id="toolbar-logo" src="data:image/svg+xml;base64,{LOGO_B64}" alt="Mytra">
     <div class="tb-sep"></div>
-    <button class="btn" onclick="collapseAll()">Collapse All</button>
-    <button class="btn" onclick="expandAll()">Expand All</button>
-    <button class="btn" onclick="changeLevel(-1)">− Level</button>
-    <button class="btn" onclick="changeLevel(1)">+ Level</button>
+    <button class="btn" onclick="collapseAll()">− all</button>
+    <button class="btn" onclick="changeLevel(-1)">−</button>
+    <button class="btn" onclick="changeLevel(1)">+</button>
+    <button class="btn" onclick="expandAll()">+ all</button>
     <div class="tb-sep"></div>
-    <button class="btn ryg-btn active" data-ryg="Green" onclick="toggleRYG(this)"><span class="ryg-dot" style="background:var(--ryg-green)"></span>Green</button>
-    <button class="btn ryg-btn active" data-ryg="Yellow" onclick="toggleRYG(this)"><span class="ryg-dot" style="background:var(--ryg-yellow)"></span>Yellow</button>
-    <button class="btn ryg-btn active" data-ryg="Red" onclick="toggleRYG(this)"><span class="ryg-dot" style="background:var(--ryg-red)"></span>Red</button>
-    <button class="btn ryg-btn active" data-ryg="Gray" onclick="toggleRYG(this)"><span class="ryg-dot" style="background:var(--ryg-gray)"></span>Gray</button>
-    <button class="btn ryg-btn active" data-ryg="null" onclick="toggleRYG(this)"><span class="ryg-dot" style="background:var(--border)"></span>None</button>
+    <button class="ryg-btn active" data-ryg="Green" onclick="toggleRYG(this)" style="background:var(--ryg-green)"></button>
+    <button class="ryg-btn active" data-ryg="Yellow" onclick="toggleRYG(this)" style="background:var(--ryg-yellow)"></button>
+    <button class="ryg-btn active" data-ryg="Red" onclick="toggleRYG(this)" style="background:var(--ryg-red)"></button>
+    <button class="ryg-btn active" data-ryg="Gray" onclick="toggleRYG(this)" style="background:var(--ryg-gray)"></button>
     <div class="tb-sep"></div>
     <input id="filter-include" placeholder="include..." oninput="applyFilters()">
     <input id="filter-exclude" placeholder="exclude..." oninput="applyFilters()">
@@ -167,7 +171,7 @@ html,body{{height:100%;background:var(--bg);color:var(--text);font-family:'JetBr
     <button class="btn" data-scale="M" onclick="setScale(this)">Month</button>
     <button class="btn" data-scale="Q" onclick="setScale(this)">Quarter</button>
     <div class="tb-sep"></div>
-    <button class="btn" onclick="toggleTheme()">🌓</button>
+    <button class="btn" id="theme-btn" onclick="toggleTheme()" style="padding:3px 6px;line-height:0"></button>
     <span id="updated"></span>
   </div>
   <div id="gantt-wrap">
@@ -198,7 +202,7 @@ const ACCENT = 'rgb(85,53,243)';
 
 // ── State ──
 let collapsed = new Set();
-let visibleRYG = new Set(['Green','Yellow','Red','Gray','null']);
+let visibleRYG = new Set(['Green','Yellow','Red','Gray']);
 let selectedId = null;
 let pxPerDay = 10;
 let prevPxPerDay = null;
@@ -278,11 +282,8 @@ function render() {{
 
   visibleRows = ROWS.filter(r => {{
     if (isAncestorCollapsed(r)) return false;
-    const ryg = r.ryg ? r.ryg : 'null';
-    if (!visibleRYG.has(ryg) && !visibleRYG.has(r.ryg)) {{
-      // Check if ryg matches any active filter
-      if (!visibleRYG.has(ryg)) return false;
-    }}
+    const ryg = ['Green','Yellow','Red'].includes(r.ryg) ? r.ryg : 'Gray';
+    if (!visibleRYG.has(ryg)) return false;
     const name = (r.name || '').toLowerCase();
     if (includeText && !name.includes(includeText)) return false;
     if (excludeText && name.includes(excludeText)) return false;
@@ -346,7 +347,7 @@ function svgText(svg, x, y, label, fill, size) {{
   const t = document.createElementNS('http://www.w3.org/2000/svg','text');
   t.setAttribute('x',x); t.setAttribute('y',y);
   t.setAttribute('fill',fill); t.setAttribute('font-size',size||10);
-  t.setAttribute('font-family','JetBrains Mono,monospace');
+  t.setAttribute('font-family','Roboto Mono,monospace');
   t.textContent = label;
   svg.appendChild(t);
 }}
@@ -582,11 +583,18 @@ function setScale(btn) {{
 }}
 
 // ── Theme ──
+function updateThemeBtn() {{
+  const isDark = document.documentElement.dataset.theme === 'dark';
+  document.getElementById('theme-btn').innerHTML = isDark
+    ? `<svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="white" stroke="#555" stroke-width="1"/><circle cx="7" cy="7" r="3" fill="black"/></svg>`
+    : `<svg width="14" height="14" viewBox="0 0 14 14"><circle cx="7" cy="7" r="6" fill="white" stroke="#aaa" stroke-width="1"/></svg>`;
+}}
 function toggleTheme() {{
   const html = document.documentElement;
   const next = html.dataset.theme === 'dark' ? 'light' : 'dark';
   html.dataset.theme = next;
   localStorage.setItem('tl-theme', next);
+  updateThemeBtn();
 }}
 
 // ── Tooltip ──
@@ -707,6 +715,7 @@ function setupResize() {{
 // ── Theme restore ──
 const savedTheme = localStorage.getItem('tl-theme');
 if (savedTheme) document.documentElement.dataset.theme = savedTheme;
+updateThemeBtn();
 
 init();
 </script>

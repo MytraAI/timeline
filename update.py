@@ -1,7 +1,10 @@
 import os, json, requests, subprocess, tempfile, argparse
 from datetime import datetime, timezone
-from dotenv import load_dotenv
-load_dotenv()
+try:
+    from dotenv import load_dotenv
+    load_dotenv()
+except ImportError:
+    pass
 
 SHEET_ID = "3906472049069956"
 SS_TOKEN = os.environ["SMARTSHEET_API_TOKEN"]
@@ -54,6 +57,8 @@ def fetch_rows():
                 val = normalize_date(val)
             node[field] = val
         if not node.get("name") or not str(node["name"]).strip():
+            continue
+        if str(node["name"]).strip().lower().startswith("published"):
             continue
         rows.append(node)
     return rows
@@ -168,8 +173,8 @@ html,body{{height:100%;background:var(--bg);color:var(--text);font-family:'Robot
     <input id="filter-include" placeholder="include..." oninput="applyFilters()">
     <input id="filter-exclude" placeholder="exclude..." oninput="applyFilters()">
     <div class="tb-sep"></div>
-    <button class="btn active" data-scale="W" onclick="setScale(this)">Week</button>
     <button class="btn" data-scale="D" onclick="setScale(this)">Day</button>
+    <button class="btn active" data-scale="W" onclick="setScale(this)">Week</button>
     <button class="btn" data-scale="M" onclick="setScale(this)">Month</button>
     <button class="btn" data-scale="Q" onclick="setScale(this)">Quarter</button>
     <div class="tb-sep"></div>
@@ -217,15 +222,14 @@ function init() {{
   // Build rowMap
   ROWS.forEach(r => rowMap[r.id] = r);
 
-  // Set updated timestamp
-  const d = new Date(__DATA__.updatedAt);
-  document.getElementById('updated').textContent = 'Updated ' + d.toLocaleString();
 
   // Default collapse: expand root + depth-1 only
   ROWS.forEach(r => {{
     const depth = getDepth(r);
     if (depth >= 2) collapsed.add(r.id);
   }});
+  const d = new Date(__DATA__.updatedAt);
+  document.getElementById('updated').textContent = 'Updated ' + d.toLocaleString();
 
   computeDateRange();
   render();
@@ -279,16 +283,16 @@ function render() {{
   const totalW = Math.ceil(totalDays * pxPerDay);
 
   // Compute visible rows
-  const includeText = document.getElementById('filter-include').value.trim().toLowerCase();
-  const excludeText = document.getElementById('filter-exclude').value.trim().toLowerCase();
+  const includeTerms = document.getElementById('filter-include').value.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+  const excludeTerms = document.getElementById('filter-exclude').value.split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
 
   visibleRows = ROWS.filter(r => {{
     if (isAncestorCollapsed(r)) return false;
     const ryg = ['Green','Yellow','Red'].includes(r.ryg) ? r.ryg : 'Gray';
     if (!visibleRYG.has(ryg)) return false;
     const name = (r.name || '').toLowerCase();
-    if (includeText && !name.includes(includeText)) return false;
-    if (excludeText && name.includes(excludeText)) return false;
+    if (includeTerms.length && !includeTerms.some(t => name.includes(t))) return false;
+    if (excludeTerms.some(t => name.includes(t))) return false;
     return true;
   }});
 

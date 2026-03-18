@@ -66,13 +66,12 @@ mytratimeline.pages.dev (Cloudflare Pages + Zero Trust)
 | Assignee | `assignee` | TEXT_NUMBER | |
 | % Complete | `pctComplete` | TEXT_NUMBER | |
 | Predecessors | `predecessors` | PREDECESSOR | Display only |
-| Variance2 | `variance` | DURATION | e.g. `"3d"` or `"0"` |
 | Comments | `comments` | TEXT_NUMBER | Free text |
 | Master Schedule Item | `masterScheduleItem` | CHECKBOX | Boolean |
 
 ### Excluded columns
 - Baseline Start, Baseline Finish, Baseline Start2, Baseline Finish2
-- Variance (legacy, use Variance2 only)
+- Variance, Variance2
 - Modified, Modified By
 
 ---
@@ -135,7 +134,7 @@ Single self-contained `index.html` — no build step, no dependencies except Goo
 | GanttTable | Left label panel — indent tree, RYG circle, row name, collapse chevron |
 | GanttBars | Right SVG panel — horizontal bars sized/positioned by Start/Finish |
 | TimeAxis | Date header row — Day/Week/Month/Quarter scale |
-| HoverTooltip | Compact popup: RYG, Start/Finish, Duration, Variance, Assignee |
+| HoverTooltip | Compact popup: RYG, Start/Finish, Duration, Assignee |
 | DetailPanel | Slide-in side panel on click: all fields, predecessors resolved by name |
 | CollapseControls | Expand All / Collapse All / Expand One Level / Collapse One Level |
 | FilterBar | RYG status toggles (🟢🟡🔴✅⚪) + text include/exclude search |
@@ -152,7 +151,6 @@ Single self-contained `index.html` — no build step, no dependencies except Goo
 - RYG circle + status emoji
 - Start / Finish dates
 - Duration
-- Variance (if non-zero)
 - Assignee
 
 ### Click behavior
